@@ -22,15 +22,29 @@ const ColorList = (props) => {
     // think about where will you get the id from...
     // where is is saved right now?
 
-    console.log(colorToEdit)
+    // console.log(colorToEdit)
 
-    // axiosWithAuth().put()
+    axiosWithAuth().put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+    .catch(err => console.log(err.response));
+
+    const colorIdx = props.colors.findIndex(color => color.id === colorToEdit.id);
+    const colorsCopy = [...props.colors];
+    
+    colorsCopy.splice(colorIdx, 1, colorToEdit);
+    
+    props.updateColors(colorsCopy);
   };
-
+  
   const deleteColor = color => {
     // make a delete request to delete this color
     axiosWithAuth().delete(`/api/colors/${color.id}`)
     .catch(err => console.log(err.response));
+
+    const colorIdx = props.colors.findIndex(val => val.id === color.id);
+
+    // console.log(colorIdx, color);
+
+    props.updateColors([...props.colors.slice(0, colorIdx), ...props.colors.slice(colorIdx + 1)]);
   };
 
   return (
@@ -78,7 +92,7 @@ const ColorList = (props) => {
           </label>
           <div className="button-row">
             <button type="submit">save</button>
-            <button onClick={() => setEditing(false)}>cancel</button>
+            <button type="button" onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>
       )}
